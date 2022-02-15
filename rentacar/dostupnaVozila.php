@@ -87,6 +87,7 @@
     <?php 
       include ('includes/header.html');
     ?>
+ 
     <div>
         <table class="styled-table" style="color: white; margin: auto; margin-top: 60px;">
             <thead>
@@ -111,43 +112,53 @@
                 echo "<td>".$row['Ime']."</td>";
                 echo "<td>".$row['Kategorija']."</td>";
                 echo "<td>".$row['Cijena']."</td>";
-                echo "<td><button class='open-button' onclick='openForm()'".$row['Id'].">UNAJMI</button></td>";
+                echo "<td><button class='open-button' onclick='openForm()' id=“makeReservation“ data-carid='".$row['Id']."'>UNAJMI</button></td>";
                 echo "</tr>";
               }
             }
                 ?>
                 
             </tbody>
+            </div>
         </table>
-    </div>
+    
+        <div class="form-popup" id="myForm">
+
     <?php
-      include ('includes/footer.html');
-    ?> 
-  
-  <?php
+
       $db = mysqli_connect("localhost", "root", "", "carrental");
 
-
+      
    
     if (isset($POST['submit'])) {
        
+        $carID = $POST['carID'];
         $ime = $_POST['ime'];
         $prezime = $POST['prezime'];
 		    $email = $POST['email'];
 		    $brojDana = $POST['brojDana'];
-
+        
+		 
 		$sql1 = "INSERT INTO kupci(ime, prezime, email)
-			VALUES ('".$ime."', '".$prezime."', '".$email."')";
+		VALUES ('".$ime."', '".$prezime."', '".$email."')";
 		$db->query($sql1);
 
-    $sql2 = "INSERT INTO najmovi(brojDana)
-    VALUES ('".$brojDana."')";
-	  $db->query($sql2);
+    if ($db->query($sql1) === TRUE) {
+      $last_id = $db->insert_id;
+      echo "New record created successfully. Last inserted ID is: " . $last_id;
     } else {
-      echo 'Error';
+      echo "Error: " . $sql1 . "<br>" . $db->error;
     }
+    $sql2 = "INSERT INTO najmovi(voziloID, kupacID, brojDana)
+		VALUES ('".$carID."', '".$last_id."', '".$brojDana."')";
+    $db->query($sql2);
+
+
+		  
+  }
+		   
+
 ?>
-      <div class="form-popup" id="myForm">
         <form action="dostupnaVozila.php" class="form-container" method="POST" name="najam">
           <h1>Unesi podatke:</h1>
 
@@ -163,13 +174,21 @@
           <label for="brojDana"><b>Broj dana:</b></label>
           <input type="number" placeholder="10" name="brojDana" required>
 
-          <button type="submit" class="btn">Potvrdi</button>
+          <input type="hidden" id="reservationCarID" name="carID" value="0">
+          <button type="submit" name="submit" class="btn">Potvrdi</button>
           <button type="button" class="btn cancel" onclick="closeForm()">Zatvori</button>
         </form>
       </div>
+        <?php
+      include ('includes/footer.html');
+    ?> 
 <script>
     function openForm() {
       document.getElementById("myForm").style.display = "block";
+
+      var buttonData = document.querySelector('#makeReservation ');
+      document.getElementById("reservationCarID").value = buttonData.carid;  
+
     }
 
     function closeForm() {
