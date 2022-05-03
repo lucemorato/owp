@@ -1,3 +1,6 @@
+<?php 
+      include ('includes/header.php');
+    ?>
 <?php
     $db = mysqli_connect("localhost", "root", "", "carrental");
 ?>
@@ -84,9 +87,7 @@
     </style>
   </head>
   <body>
-    <?php 
-      include ('includes/header.php');
-    ?>
+    
  
     <div>
         <table class="styled-table" style="color: white; margin: auto; margin-top: 20px;">
@@ -119,7 +120,8 @@
                 echo "<td>".$row['Kategorija']."</td>";
                 echo "<td>".$row['Cijena']."</td>";
                 echo "<td>".$row['Kolicina']."</td>";
-                echo "<td><button class='open-button' onclick='openForm(this)' class=“makeReservation“ data-carid='".$row['Id']."' data-price='".$cijena."' data-name='".$ime."'>UNAJMI</button></td>";
+                echo "<td><a href='3.php?car_id=".$row['Id']."'>UNAJMI</a></td>";  
+                echo "</tr>";
                 echo "</tr>";
               }
             }
@@ -135,6 +137,38 @@
 
       $db = mysqli_connect("localhost", "root", "", "carrental");
 
+    //provjeri je li car id setiran ili ne
+    if(isset($_GET['car_id']))
+    {
+        //dohvati car_id i sve detalje vezane za selektirano auto
+        $car_id = $_GET['car_id'];
+
+        //dohvati detlje selektiranog vozila
+        $sql = "SELECT * FROM vozila WHERE id=$car_id";
+        $res = mysqli_query($db, $sql);
+        $count = mysqli_num_rows($res);
+
+        if($count == 1)
+        {
+            $row = mysqli_fetch_assoc($res);
+            
+            $ime = $row['Ime'];
+            $kategorija = $row['Kategorija'];
+            $cijena = $row['Cijena'];
+            $kolicina = $row['Kolicina'];
+        }
+        else
+        {
+            header('location:'.SITEURL);
+        }
+
+    }
+    else
+    {
+        header('location:'.SITEURL);
+    }
+?>
+<?php
       if (isset($_POST['submit'])) {
        
         $carID = $_POST['carID'];
@@ -143,8 +177,7 @@
 		    $email = $_POST['email'];
 		    $brojDana = $_POST['brojDana'];
 		    $cijena = $_POST['cijena'];
-        $total = $cijena * $brojDana;
-       
+		    $total = $cijena * $brojDana;
         
         
        
@@ -159,11 +192,9 @@
           //echo "Error: " . $sql1 . "<br>" . $db->error;
         //}
         $last_id = $db->insert_id;
-        $sql2 = "INSERT INTO najmovi(voziloID, kupacID, brojDana, total, cijena, ime, prezime, email)
-        VALUES ('".$carID."', '".$last_id."', '".$brojDana."', '".$total."', '".$cijena."', '".$ime."', '".$prezime."', '".$email."')";
+        $sql2 = "INSERT INTO najmovi(voziloID, kupacID, brojDana, total, cijena)
+        VALUES ('".$carID."', '".$last_id."', '".$brojDana."', '".$total."', '".$cijena."')";
         $db->query($sql2);
-
-        //$sql3 = "INSERT INTO najmovi(voziloID, kupacID, brojDana, total, cijena)"
 
         //ovaj query triba preformulirat!!! nekad radi, nekad ne radi ?
         //$sql3 = "UPDATE najmovi SET total = (SELECT brojDana * cijena FROM najmovi, vozila WHERE najmovi.voziloID=vozila.id AND najmovi.voziloID=$carID) WHERE voziloID=$carID";
@@ -178,7 +209,7 @@
     ?>
 
 
-        <form action="dostupnaVozila.php" class="form-container" method="POST" name="najam">
+        <form action="3.php" class="form-container" method="POST" name="najam">
           <h1>Unesi podatke:</h1>
 
           <label for="ime"><b>Ime</b></label>
@@ -193,16 +224,11 @@
           <label for="brojDana"><b>Broj dana:</b></label>
           <input type="number" placeholder="10" name="brojDana" required>
 
-      
-          <input type="hidden" name="imeVozila" value="<?php echo $imeVozila; ?>">
-        
-          <input type="hidden" name="cijena" value="<?php echo $cijena; ?>">
           
+          <h3>Cijena: <?php echo $cijena;?></h3>
+          <input type="hidden" name="cijena" value="<?php echo $cijena; ?>">
 
           <input type="hidden" id="reservationCarID" name="carID" value="0">
-          <input type="hidden" id="reservationCarName" name="imeVozila" required>
-          <div id="reservationCarPrice">0,00</div>
-          <div id="reservationCarName"></div>
           <button type="submit" name="submit" class="btn">Potvrdi</button>
           <button type="button" class="btn cancel" onclick="closeForm()">Zatvori</button>
         </form>
@@ -215,9 +241,7 @@
       document.getElementById("myForm").style.display = "block";
 
       var buttonData = document.getElementsByClassName('makeReservation');
-      document.getElementById("reservationCarID").value = el.getAttribute('data-carid');
-      document.getElementById("reservationCarPrice").innerHTML = el.getAttribute('data-price');
-      document.getElementById("reservationCarName").innerHTML = el.getAttribute('data-name');
+      document.getElementById("reservationCarID").value = el.getAttribute('data-carid');  
 
     }
 

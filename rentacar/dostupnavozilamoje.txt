@@ -1,0 +1,48 @@
+<div class="container">
+        <?php
+        //prikazi sva vozila kojima je kolicina > 0
+          $sql = "SELECT * FROM vozila WHERE kolicina > 0 ORDER BY ime";
+        //izvrsi ovaj sql zahtjev i spremi u result
+          $result=mysqli_query($db, $sql);
+        //izbroji redove
+          $count=mysqli_num_rows($result);
+        //Provjeri ako ima voila koji su dostupni
+        if($count>0)
+        {
+            //Vozila su dostupna
+            while($row=mysqli_fetch_assoc($result))
+            {
+                //Dohvati vrijednosti
+                $id = $row['Id'];
+                $ime = $row['Ime'];
+                $kategorija = $row['Kategorija'];
+                $cijena = $row['Cijena'];
+                $kolicina = $row['Kolicina'];
+                ?>
+
+                    <div>
+                        <h4><?php echo $ime; ?></h4>
+                        <p><?php echo $kategorija; ?></p>
+                        <p><?php echo $cijena; ?></p>
+                        <p><?php echo $kolicina; ?></p>
+                        
+                        <br>
+
+                        <a href="<?php echo SITEURL; ?>najam.php?car_id=<?php echo $id; ?>" >Unajmi</a>
+                    </div>
+                </div>
+
+                <?php
+            }
+        }
+        else
+        {
+            //Vozila nisu dostupna
+            echo "<div class='error'>Voilo nije dostupno.</div>";
+        }
+    ?>
+     </div>
+
+   </section>
+  </body>
+</html>
