@@ -1,3 +1,6 @@
+<?php 
+      include ('includes/header.php');
+    ?>
 <?php
     $db = mysqli_connect("localhost", "root", "", "carrental");
 ?>
@@ -84,9 +87,7 @@
     </style>
   </head>
   <body>
-    <?php 
-      include ('includes/header.php');
-    ?>
+    
  
     <div>
         <table class="styled-table" style="color: white; margin: auto; margin-top: 20px;">
@@ -119,7 +120,8 @@
                 echo "<td>".$row['Kategorija']."</td>";
                 echo "<td>".$row['Cijena']."</td>";
                 echo "<td>".$row['Kolicina']."</td>";
-                echo "<td><button class='open-button' onclick='openForm(this)' class=“makeReservation“ data-carid='".$row['Id']."'>UNAJMI</button></td>";
+                echo "<td><a href='3.php?car_id=".$row['Id']."'>UNAJMI</a></td>";  
+                echo "</tr>";
                 echo "</tr>";
               }
             }
@@ -135,6 +137,38 @@
 
       $db = mysqli_connect("localhost", "root", "", "carrental");
 
+    //provjeri je li car id setiran ili ne
+    if(isset($_GET['car_id']))
+    {
+        //dohvati car_id i sve detalje vezane za selektirano auto
+        $car_id = $_GET['car_id'];
+
+        //dohvati detlje selektiranog vozila
+        $sql = "SELECT * FROM vozila WHERE id=$car_id";
+        $res = mysqli_query($db, $sql);
+        $count = mysqli_num_rows($res);
+
+        if($count == 1)
+        {
+            $row = mysqli_fetch_assoc($res);
+            
+            $ime = $row['Ime'];
+            $kategorija = $row['Kategorija'];
+            $cijena = $row['Cijena'];
+            $kolicina = $row['Kolicina'];
+        }
+        else
+        {
+            header('location:'.SITEURL);
+        }
+
+    }
+    else
+    {
+        header('location:'.SITEURL);
+    }
+?>
+<?php
       if (isset($_POST['submit'])) {
        
         $carID = $_POST['carID'];
@@ -175,7 +209,7 @@
     ?>
 
 
-        <form action="dostupnaVozila.php" class="form-container" method="POST" name="najam">
+        <form action="3.php" class="form-container" method="POST" name="najam">
           <h1>Unesi podatke:</h1>
 
           <label for="ime"><b>Ime</b></label>
