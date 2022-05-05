@@ -34,18 +34,15 @@ function filterTable($query)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
     <style>
-     
-    input[type=text] {
-      padding: 10px;
-      font-size: 17px;
-      border: 1px solid grey;
-      float: left;
-      width: 72.5%;
-      background: #f1f1f1;
-      float: left;
-      margin-top: 20px;
-      
-}
+      input[type=text] {
+        padding: 10px;
+        font-size: 17px;
+        border: 1px solid grey;
+        float: left;
+        width: 72.5%;
+        background: #f1f1f1;
+        margin-top: 20px;    
+      }
       /* Style the submit button */
       button {
         float: left;
@@ -60,34 +57,62 @@ function filterTable($query)
         float: right;
         display: inline;
         margin-top: 20px;
-        
       }
-      
+          
       form.search button:hover {
-  background: #0b7dda;
-}
+        background: #0b7dda;
+      }
 
-/* Clear floats */
-form.search::after {
-  content: "";
-  clear: both;
-  display: table;
-}
+      /* Clear floats */
+      form.search::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+      .styled-table2 {
+        border-collapse: collapse;
+        margin-right: auto;
+        margin-left: auto;
+        margin-top: 20px;
+        font-size: 1.3em;
+        font-family: sans-serif;
+        /*max-width: 400px;*/
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      }
 
+      styled-table2 thead tr {
+        color: #f1f1f1;
+      }
+      .styled-table2 th,
+      .styled-table2 td {
+        padding: 12px 15px;
+        text-align: center;
+      }
+      .styled-table2 tbody tr {
+        border-bottom: 1px solid #dddddd;
+        border-top: 1px solid #dddddd;
+      }
+
+      .styled-table2 tbody tr:nth-of-type(even) {
+        background-color: #f1f1f1;
+        color: black;
+      }
+
+      .styled-table2 tbody tr:last-of-type {
+        border-bottom: 2px solid white;
+      }
     </style>
   </head>
   <body>
     <?php 
-      include ('includes/header.html');
+      include ('includes/header.php');
     ?>
      <main>
        <div style="display: inline;">
-       <form class="search" action="ponudaVozila.php" style="max-width:300px;" method="post">
-            <input type="text" name="valueToSearch" placeholder="Marka/Kategorija"> 
+       <form class="search" action="ponudaVozila.php" style="margin:auto;max-width:300px" method="post">
+            <input type="text" name="valueToSearch" placeholder="Marka / Kategorija"> 
             
-            <button type="submit" name="search"><i class="fa fa-search"></i></button>
-            
-            
+            <button type="submit" name="search"><i class="fa fa-search"></i></button> 
           </div>
      
             
@@ -114,9 +139,9 @@ form.search::after {
     */
     ?>
      <div>
-        <table class="styled-table">
+        <table class="styled-table2">
             <thead>
-                <tr style="display: inline-table;">
+                <tr>
                     <th scope="col">Marka</th>
                     <th scope="col">Kategorija</th>
                     <th scope="col">Cijena</th>
@@ -124,19 +149,33 @@ form.search::after {
             </thead>
             <tbody>  
            <?php
-              
-            
-              while($row=mysqli_fetch_assoc($search_result)) {
+            $db = mysqli_connect("localhost", "root", "", "carrental");
+
+               $sql="SELECT * FROM vozila ORDER BY ime";
+               $result=$db->query($sql);
+               $resultCheck = mysqli_num_rows($result);
+               if($resultCheck>0) {
+               while($row = mysqli_fetch_assoc($search_result)){
+
+               echo "<tr>";
+               //echo "<td>".$row['Id']."</td>";
+               echo "<td>".$row['Ime']."</td>";
+               echo "<td>".$row['Kategorija']."</td>";
+               echo "<td>".$row['Cijena']."</td>";
+               echo "</tr>";
+              }
+          }
+              //while($row=mysqli_fetch_assoc($search_result)) {
                 
                 ?>
-                  <tr style="text-align: center; display:block;">
-                    <td><?php echo $row['Ime']; ?><td>
-                    <td><?php echo $row['Kategorija']; ?><td>
-                    <td><?php echo $row['Cijena']; ?><td>
-                  </tr>
+                  <!--<tr style="text-align: center; display:block;">
+                    <td><?php //echo $row['Ime']; ?><td>
+                    <td><?php //echo $row['Kategorija']; ?><td>
+                    <td><?php //echo $row['Cijena']; ?><td>
+                  </tr>-->
                   
                   <?php
-                }
+                //}
               
             ?>
 			

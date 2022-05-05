@@ -14,11 +14,10 @@
   </head>
   <body>
     <?php 
-      include ('includes/header.html');
+      include ('includes/header.php');
     ?>
      <main>
-        <h1 class="poruka">Start an adventure</h1>
-        
+        <h1 class="poruka">Start an adventure</h1>   
     </main>
     <?php
       include ('includes/footer.html');
